@@ -25,7 +25,6 @@ component Games.Blocks {
     stdDelay + 200 * n
   }
 
-  property bgFill : String = "transparent"
   property inactiveFill : String = "#eaeaea"
   property correctFill : String = "#81DAE3"
   property missedFill : String = "#888"

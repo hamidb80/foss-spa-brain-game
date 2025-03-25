@@ -5,8 +5,8 @@ component Home {
   ]
 
   style logo {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
 
     *{
       max-width: 100%;
@@ -20,7 +20,7 @@ component Home {
 
       <div class="container">
         <div class="d-flex justify-content-center">
-          <div::logo>
+          <div::logo class="my-4">
             @svg(../../assets/brain-puzzled.svg)
           </div>
         </div>
