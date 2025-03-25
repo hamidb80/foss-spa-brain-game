@@ -13,3 +13,9 @@ trying to implement Brain Games
 ## Development
 - colors from [ColorHunt](https://colorhunt.co/palettes/)
 - icons form [SvgRepo](https://www.svgrepo.com/)
+
+## Deployment
+for deployment in **Github Page** you have to manually apply this changes:
+- enter `mint build`
+- rename `__mint__` to `assets`
+- change all the occurance of `/__mint__` to `/repo_name/assets`
