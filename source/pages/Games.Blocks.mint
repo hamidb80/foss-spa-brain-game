@@ -16,15 +16,14 @@ type Record {
 }
 
 component Games.Blocks {
+  connect Application exposing { windowWidth, windowHeight }
+
   property initialCapacity = 3
   property stdDelay: Number = 1000
 
   property delay: Function(Number, Number) = (n: Number) {
     stdDelay + 200 * n
   }
-
-  property padx : Number = 16
-  property pady : Number = 16
 
   property bgFill : String = "transparent"
   property inactiveFill : String = "#eaeaea"
@@ -33,7 +32,6 @@ component Games.Blocks {
   property wrongFill : String = "#FF8989"
   property selectedFill : String = "#81DAE3"
   property sampledFill : String = "#81DAE3"
-
 
   property nextCapacityDecider: Function(Array(Record), Number) = (history: Array(Record)) {
     case Array.last(history) {
@@ -46,23 +44,34 @@ component Games.Blocks {
     size + inc
   }
 
+  property offsetRatio = 0.2
+  property borderRoundRatio = 0.1
+
   // ------------------------------------------------------------
 
   state records: Array(Record) = []
-  state capacity : Number = 0
   state sampled : Array(Number) = []
   state selected : Array(Number) = []
+  state capacity : Number = 2
+  
   state phase = Phases.Initial
   state flow = Flow.Stopped
   state size : Number = 4
-  state cellsize : Number = 64
-  state radius : Number = 4
-  state offset : Number = 16
+  
+
+  get cellsize {
+    let minbox = Math.min(Math.min(windowWidth, windowHeight), 500) - 16
+    minbox / (size * (1 + offsetRatio))
+  }
+  get offset { cellsize * offsetRatio }
+  get radius { cellsize * borderRoundRatio }
 
   get won { sampled |> Array.reduce(true, (acc: Bool, i: Number) {acc && Array.contains(selected, i)})}
   get len { size * size }
-  get width { size * cellsize + (size - 1) * offset + 2 * padx }
-  get height { size * cellsize + (size - 1) * offset + 2 * pady }
+  get width { 
+    size * cellsize + (size - 1) * offset
+  }
+  get height { size * cellsize + (size - 1) * offset }
 
   style cell {
     cursor: pointer;
@@ -72,19 +81,25 @@ component Games.Blocks {
   fun render : Html {
     <div>
 
-      <h2>
-        "memo: " capacity
+      <h2 class="container my-4 text-center">
+        if flow == Flow.Stopped {
+          "Click on grid to start"
+        }
+        else {
+          "level: #{capacity}"
+        }
       </h2>
 
-      <svg 
+      <div class="d-flex justify-content-center">
+        <svg 
           width="#{width}" 
           height="#{height}" 
           xmlns="http://www.w3.org/2000/svg">
 
         for x of Array.range(0, len-1) {
             <rect::cell
-              x="#{padx+(x % size)*(offset + cellsize)}" 
-              y="#{pady+Math.floor(x / size)*(offset + cellsize)}" 
+              x="#{(x % size)*(offset + cellsize)}" 
+              y="#{Math.floor(x / size)*(offset + cellsize)}" 
               width="#{cellsize}" 
               height="#{cellsize}"
               rx="#{radius}" 
@@ -105,29 +120,23 @@ component Games.Blocks {
 
               onClick={ () {selectBox(x)} }
               />
-        }
-      </svg>
+          }
+        </svg>
 
-      <div>
-        if flow == Flow.Stopped {
-          <button class="btn btn-primary" onClick={startGame} >
-            "Start"
-          </button>
-        }
       </div>
-
+ 
     </div>
   }
 
   fun startGame () {
     next {selected: [],
-          capacity : nextCapacityDecider(records)}
+          capacity : nextCapacityDecider(records),
+          flow: Flow.Running,
+          phase: Phases.Initial}
     
     await Timer.timeout(0.4 * stdDelay)
 
-    next {size: sizeCalc(capacity, size),
-          phase: Phases.Initial,
-          flow: Flow.Running}
+    next {size: sizeCalc(capacity, size)}
     
     await Timer.timeout(0.6 * stdDelay)
 
@@ -140,8 +149,10 @@ component Games.Blocks {
   }
 
   fun selectBox(x: Number){
-    if phase == Phases.Select {
-
+    if flow == Flow.Stopped {
+      startGame()
+    }
+    else if phase == Phases.Select {
       if !Array.contains(selected, x){ // select only if not selected already
         next {selected: Array.push(selected, x)}
 
@@ -153,11 +164,8 @@ component Games.Blocks {
           next {records : Array.push(records, {capacity: capacity, succeed: won} ),
                 phase : Phases.Initial }
 
-          if flow == Flow.Running {
-            startGame()
-          }
+          startGame()
         }
- 
       }      
     }
   }
