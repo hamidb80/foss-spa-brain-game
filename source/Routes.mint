@@ -8,7 +8,7 @@ routes {
     Application.setGame(game)
   }
 
-  * {
-    Application.setPage(Page.Error404)
-  }
+  // * {
+  //   Application.setPage(Page.Error404)
+  // }
 }

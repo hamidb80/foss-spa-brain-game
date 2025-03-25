@@ -9,6 +9,7 @@ store Application {
   state gname: String = ""
 
   fun setPage (page : Page) : Promise(Void) {
+    Http.abortAll()
     next { page: page }
   }
 
