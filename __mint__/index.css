@@ -1,0 +1,14 @@
+.a {
+  cursor: pointer;
+  transition: fill 0.3s ease-out;
+}
+
+.b {
+  width: 60px;
+  height: 60px;
+}
+
+.b * {
+  max-width: 100%;
+  max-height: 100%;
+}
