@@ -1,24 +1,24 @@
-type Phases {
+type Games.Blocks.Phases {
   Initial
   Prepare
   Select
   Reveal
 }
 
-type Flow {
+type Games.Blocks.Flow {
   Stopped
   Running
 }
 
-type Record {
-  capacity: Number,
+type Games.Blocks.Record {
+  level: Number,
   succeed: Bool
 }
 
 component Games.Blocks {
   connect Application exposing { windowWidth, windowHeight }
 
-  property initialCapacity = 3
+  property initialLevel = 3
   property stdDelay: Number = 1000
 
   property delay: Function(Number, Number) = (n: Number) {
@@ -32,10 +32,23 @@ component Games.Blocks {
   property selectedFill : String = "#81DAE3"
   property sampledFill : String = "#81DAE3"
 
-  property nextCapacityDecider: Function(Array(Record), Number) = (history: Array(Record)) {
+  property nextCapacityDecider: Function(Array(Games.Blocks.Record), Number) = (history: Array(Games.Blocks.Record)) {
     case Array.last(history) {
-      Nothing => initialCapacity
-      Just(h) => if h.succeed {h.capacity + 1} else {h.capacity}
+      Nothing => initialLevel
+      Just(h) => 
+        if h.succeed {h.level + 1} 
+        else {
+          let c = 
+            history
+            |> Array.takeEnd(3)
+            |> Array.map(.level(Games.Blocks.Record))
+            |> Array.uniq()
+            |> Array.size()
+
+          // decrease level if user failed 3 times in a row
+          if c == 1 {Math.max(c - 1, initialLevel)}
+          else      {h.level} 
+        }
     }
   }
   property sizeCalc: Function(Number, Number, Number) = (cap: Number, size: Number) {
@@ -48,13 +61,13 @@ component Games.Blocks {
 
   // ------------------------------------------------------------
 
-  state records: Array(Record) = []
+  state records: Array(Games.Blocks.Record) = []
   state sampled : Array(Number) = []
   state selected : Array(Number) = []
-  state capacity : Number = 2
+  state level : Number = 2
   
-  state phase = Phases.Initial
-  state flow = Flow.Stopped
+  state phase = Games.Blocks.Phases.Initial
+  state flow = Games.Blocks.Flow.Stopped
   state size : Number = 4
   
 
@@ -81,11 +94,11 @@ component Games.Blocks {
     <div>
 
       <h2 class="container my-4 text-center">
-        if flow == Flow.Stopped {
+        if flow == Games.Blocks.Flow.Stopped {
           "Click on grid to start"
         }
         else {
-          "level: #{capacity}"
+          "level: #{level}"
         }
       </h2>
 
@@ -105,10 +118,10 @@ component Games.Blocks {
               ry="#{radius}" 
               fill={ 
                 case phase {
-                  Phases.Initial => inactiveFill
-                  Phases.Prepare => if Array.contains(sampled, x) {sampledFill} else {inactiveFill}
-                  Phases.Select => if Array.contains(selected, x) {selectedFill} else {inactiveFill}
-                  Phases.Reveal => case [Array.contains(sampled, x), Array.contains(selected, x)] {
+                  Games.Blocks.Phases.Initial => inactiveFill
+                  Games.Blocks.Phases.Prepare => if Array.contains(sampled, x) {sampledFill} else {inactiveFill}
+                  Games.Blocks.Phases.Select => if Array.contains(selected, x) {selectedFill} else {inactiveFill}
+                  Games.Blocks.Phases.Reveal => case [Array.contains(sampled, x), Array.contains(selected, x)] {
                     [true, true] => correctFill
                     [true, false] => missedFill
                     [false, true] => wrongFill
@@ -129,39 +142,39 @@ component Games.Blocks {
 
   fun startGame () {
     next {selected: [],
-          capacity : nextCapacityDecider(records),
-          flow: Flow.Running,
-          phase: Phases.Initial}
+          level : nextCapacityDecider(records),
+          flow: Games.Blocks.Flow.Running,
+          phase: Games.Blocks.Phases.Initial}
     
     await Timer.timeout(0.4 * stdDelay)
 
-    next {size: sizeCalc(capacity, size)}
+    next {size: sizeCalc(level, size)}
     
     await Timer.timeout(0.6 * stdDelay)
 
-    next {sampled: Random.shuffleIndex(len) |> Array.takeStart(capacity),
-          phase:   Phases.Prepare}
+    next {sampled: Random.shuffleIndex(len) |> Array.takeStart(level),
+          phase:   Games.Blocks.Phases.Prepare}
     
-    await Timer.timeout(delay(capacity))
+    await Timer.timeout(delay(level))
 
-    next { phase: Phases.Select }
+    next { phase: Games.Blocks.Phases.Select }
   }
 
   fun selectBox(x: Number){
-    if flow == Flow.Stopped {
+    if flow == Games.Blocks.Flow.Stopped {
       startGame()
     }
-    else if phase == Phases.Select {
+    else if phase == Games.Blocks.Phases.Select {
       if !Array.contains(selected, x){ // select only if not selected already
         next {selected: Array.push(selected, x)}
 
         if !Array.contains(sampled, x) || Array.size(selected) >= Array.size(sampled) { // end of the game
-          next {phase : Phases.Reveal}
+          next {phase : Games.Blocks.Phases.Reveal}
           
           await Timer.timeout(stdDelay)
           
-          next {records : Array.push(records, {capacity: capacity, succeed: won} ),
-                phase : Phases.Initial }
+          next {records : Array.push(records, {level: level, succeed: won} ),
+                phase : Games.Blocks.Phases.Initial }
 
           startGame()
         }
