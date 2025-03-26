@@ -5,6 +5,8 @@ locale en {
 }
 
 component Home {
+  property projectlink = "https://github.com/hamidb80/foss-spa-brain-games"
+
   style logo {
     width: 100px;
     height: 100px;
@@ -30,7 +32,7 @@ component Home {
           </div>
 
           <div class="text-center mt-2">
-            <a class="btn btn-outline-dark" href="https://github.com/hamidb80/foss-spa-brain-games">
+            <a class="btn btn-outline-dark" href={projectlink}>
               <i class="bi bi-github"></i>
             </a>
           </div>
