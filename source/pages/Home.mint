@@ -25,7 +25,7 @@ component Home {
               @svg(../../assets/brain-puzzled.svg)
             </div>
           </div>
-          <div class="text-center mt-2">
+          <div class="text-center mt-2 text-wrap mx-2">
             :misson
           </div>
 
@@ -47,7 +47,7 @@ component Home {
         </h4>
       </div>
 
-      <div class="row px-5 my-4">
+      <div class="row mx-lg-5 mx-3 my-4">
         
         <div class="col-12 col-lg-4 gx-2">
           <Game.Card
