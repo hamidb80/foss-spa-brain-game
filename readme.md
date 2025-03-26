@@ -19,3 +19,9 @@ for deployment in **Github Page** you have to manually apply this changes:
 - enter `mint build`
 - rename `__mint__` to `assets`
 - change all the occurance of `/__mint__` to `/repo_name/assets`
+
+### in my case:
+```sh
+mv ./__mint__/ ./assets/
+find ./ -type f -exec sed -i 's/__mint__/foss-spa-brain-games\/assets/g' {} +
+```
