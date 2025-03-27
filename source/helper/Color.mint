@@ -3,12 +3,6 @@ type NamedColor {
   code: String,
 }
 
-type ShapeColor {
-  fg: NamedColor,
-  bg: NamedColor,
-}
-
-
 module Colors {
   const DEFAULTS = [
     {name: "red" , code: "#FF2929"},

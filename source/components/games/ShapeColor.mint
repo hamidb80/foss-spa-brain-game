@@ -51,7 +51,7 @@ component Games.ShapeColor {
       color1: c,
       color2: randomColor(),
       color3: 
-        if Random.bool(0.65) {c}  
+        if Random.bool(0.45) {c}  
         else {randomColor()},
     }
   }

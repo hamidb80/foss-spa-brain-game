@@ -8,7 +8,7 @@ module Random {
         ` as Array(Number)
     }
 
-    fun bool (treshold: Number) {
-        Math.random() >= treshold
+    fun bool (prob: Number) {
+        Math.random() <= prob
     }
 }

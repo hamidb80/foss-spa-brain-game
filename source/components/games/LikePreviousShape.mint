@@ -6,7 +6,7 @@ type Games.LikePreviousShape.Phases {
 }
 
 type Games.LikePreviousShape.State {
-  color: ShapeColor,
+  color: NamedColor,
   dpath: String
 }
 
@@ -24,8 +24,7 @@ component Games.LikePreviousShape {
   property shapes: Array(Function(Number, String)) = ShapeGenerator.ALL
   
   property scale : Number = 200
-  property strokeWidth : Number = 8
-  property sameProbability = 0.35
+  property changeProb = 0.5
   property delay = 600
 
   // ------------------------------------------------------------
@@ -64,7 +63,7 @@ component Games.LikePreviousShape {
 
   fun randomState {
     {dpath: randomShape(),
-     color: {fg: randomColor(), bg: randomColor()}}
+     color: randomColor()}
   }
 
   // ------------------------------------------------------------
@@ -75,15 +74,20 @@ component Games.LikePreviousShape {
       Timer.timeout(delay)
     }
 
-    next {history: Array.push(history, 
-                  if Random.bool(1 - sameProbability) {
-                    case Array.last(history) {
-                      Maybe.Nothing => randomState()
-                      Maybe.Just(v) => v
-                    }
-                  }
-                  else { randomState() }
-                  )}
+    next {history: Array.push(history, {
+        case Array.last(history) {
+          Maybe.Nothing => randomState()
+          Maybe.Just(v) => {
+            dpath: 
+              if Random.bool(changeProb) {randomShape()}
+              else {v.dpath},
+            color:
+              if Random.bool(changeProb) {randomColor()}
+              else {v.color}
+          }
+        }
+      }
+    )}
 
     if delayed {
       next { phase:  Games.LikePreviousShape.Phases.Decide }
@@ -136,9 +140,7 @@ component Games.LikePreviousShape {
                   >
                   <path 
                     d={cur.dpath} 
-                    fill={cur.color.bg.code} 
-                    stroke={cur.color.fg.code}
-                    stroke-width="#{strokeWidth}px"
+                    fill={cur.color.code} 
                     />
                 </svg>
               </div>
