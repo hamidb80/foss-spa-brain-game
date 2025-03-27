@@ -1,7 +1,6 @@
 type Page {
   Home
   Games
-  Error404
 }
 
 store Application {

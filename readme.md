@@ -25,4 +25,5 @@ for deployment in **Github Page** you have to manually apply this changes:
 ```sh
 mv ./__mint__/ ./assets/
 find ./ -type f -exec sed -i 's/__mint__/foss-spa-brain-games\/assets/g' {} +
+find ./ -type f -exec sed -i 's/suburl/foss-spa-brain-games/g' {} +
 ```

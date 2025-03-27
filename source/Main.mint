@@ -6,7 +6,6 @@ component Main {
     case page {
       Page.Home  => <Home/>
       Page.Games => <Games/>
-      Page.Error404 => <Notfound/>
     }
   }
 }

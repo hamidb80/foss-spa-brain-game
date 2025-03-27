@@ -53,7 +53,7 @@ component Home {
         
         <div class="col-12 col-lg-4 gx-4 gy-3">
           <Game.Card
-            link="/games/blocks"
+            link="#{Router.BASE_URL}/games/blocks"
             name="Memory Block"
             img={@asset(/assets/memory-blocks.png)}
             desc="choose those blocks that you've seen few seconds ago"
@@ -62,7 +62,7 @@ component Home {
 
         <div class="col-12 col-lg-4 gx-4 gy-3">
           <Game.Card
-            link="/games/shape-color"
+            link="#{Router.BASE_URL}/games/shape-color"
             name="Shape Color"
             img={@asset(/assets/shape-color.png)}
             desc="is the color name same as color of the shape?"
@@ -71,7 +71,7 @@ component Home {
 
         <div class="col-12 col-lg-4 gx-4 gy-3">
           <Game.Card
-            link="/games/like-previous-shape"
+            link="#{Router.BASE_URL}/games/like-previous-shape"
             name="Like Previous?"
             img={@asset(/assets/like-previous.png)}
             desc="is the shape same as previous shape?"
