@@ -1,18 +1,22 @@
 .a {
+  max-height: 200px;
+}
+
+.b {
   cursor: pointer;
   transition: fill 0.3s ease-out;
 }
 
-.b {
-  max-height: 200px;
+.c {
+  transition: opacity 0.3s ease-out;
 }
 
-.c {
+.d {
   width: 100px;
   height: 100px;
 }
 
-.c * {
+.d * {
   max-width: 100%;
   max-height: 100%;
 }
