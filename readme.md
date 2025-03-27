@@ -13,6 +13,7 @@ trying to implement Brain Games
 ## Development
 - colors from [ColorHunt](https://colorhunt.co/palettes/)
 - icons form [SvgRepo](https://www.svgrepo.com/)
+- SVG data path [editor](https://yqnn.github.io/svg-path-editor/)
 
 ## Deployment
 for deployment in **Github Page** you have to manually apply this changes:

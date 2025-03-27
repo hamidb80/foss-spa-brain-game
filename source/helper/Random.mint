@@ -1,6 +1,4 @@
 module Random {
-
-
     fun shuffleIndex(len: Number) {
         `
         [...Array(#{len}).keys()]
@@ -8,5 +6,9 @@ module Random {
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value)
         ` as Array(Number)
+    }
+
+    fun bool (treshold: Number) {
+        Math.random() >= treshold
     }
 }

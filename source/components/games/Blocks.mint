@@ -1,13 +1,9 @@
 type Games.Blocks.Phases {
+  Ready
   Initial
   Prepare
   Select
   Reveal
-}
-
-type Games.Blocks.Flow {
-  Stopped
-  Running
 }
 
 type Games.Blocks.Record {
@@ -76,8 +72,7 @@ component Games.Blocks {
   state selected : Array(Number) = []
   state level : Number = 0
   
-  state phase = Games.Blocks.Phases.Initial
-  state flow = Games.Blocks.Flow.Stopped
+  state phase = Games.Blocks.Phases.Ready
   
   // ------------------------------------------------------------
 
@@ -129,7 +124,6 @@ component Games.Blocks {
 
   fun startGame () {
     next {selected: [],
-          flow: Games.Blocks.Flow.Running,
           phase: Games.Blocks.Phases.Initial}
     
     await Timer.timeout(0.4 * stdDelay)
@@ -147,10 +141,8 @@ component Games.Blocks {
   }
 
   fun selectBox(x: Number){
-    if flow == Games.Blocks.Flow.Stopped {
-      startGame()
-    }
-    else if phase == Games.Blocks.Phases.Select {
+    if phase == Games.Blocks.Phases.Ready {startGame()}
+    else if phase == Games.Blocks.Phases.Select  {
       // select only if not selected already
       if !Array.contains(selected, x) {
         next {selected: Array.push(selected, x)}
@@ -177,7 +169,7 @@ component Games.Blocks {
     <>
 
       <h2 class="container my-4 text-center">
-        if flow == Games.Blocks.Flow.Stopped {
+        if phase == Games.Blocks.Phases.Ready {
           :ready
         }
         else {
@@ -201,6 +193,7 @@ component Games.Blocks {
               ry="#{radius}" 
               fill={ 
                 case phase {
+                  Games.Blocks.Phases.Ready => theme.inactiveFill
                   Games.Blocks.Phases.Initial => theme.inactiveFill
                   Games.Blocks.Phases.Prepare => if Array.contains(sampled, x) {theme.sampledFill} else {theme.inactiveFill}
                   Games.Blocks.Phases.Select => if Array.contains(selected, x) {theme.selectedFill} else {theme.inactiveFill}

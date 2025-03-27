@@ -24,7 +24,7 @@ component Home {
         <div class="my-3">
           <div class="d-flex justify-content-center">
             <div::logo>
-              @svg(../../assets/brain-puzzled.svg)
+              @svg(/assets/brain-puzzled.svg)
             </div>
           </div>
           <div class="text-center mt-2 text-wrap mx-2">
@@ -51,12 +51,30 @@ component Home {
 
       <div class="row mx-lg-5 mx-3 my-4">
         
-        <div class="col-12 col-lg-4 gx-2">
+        <div class="col-12 col-lg-4 gx-4 gy-3">
           <Game.Card
             link="/games/blocks"
             name="Memory Block"
-            img={@asset(../../assets/memory-blocks.png)}
+            img={@asset(/assets/memory-blocks.png)}
             desc="choose those blocks that you've seen few seconds ago"
+            />
+        </div>
+
+        <div class="col-12 col-lg-4 gx-4 gy-3">
+          <Game.Card
+            link="/games/shape-color"
+            name="Shape Color"
+            img={@asset(/assets/shape-color.png)}
+            desc="is the color name same as color of the shape?"
+            />
+        </div>
+
+        <div class="col-12 col-lg-4 gx-4 gy-3">
+          <Game.Card
+            link="/games/like-previous-shape"
+            name="Like Previous?"
+            img={@asset(/assets/like-previous.png)}
+            desc="is the shape same as previous shape?"
             />
         </div>
 
