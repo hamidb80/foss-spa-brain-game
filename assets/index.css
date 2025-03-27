@@ -8,15 +8,15 @@
 }
 
 .c {
-  transition: opacity 0.3s ease-out;
-}
-
-.d {
   width: 100px;
   height: 100px;
 }
 
-.d * {
+.c * {
   max-width: 100%;
   max-height: 100%;
+}
+
+.d {
+  transition: opacity 0.3s ease-out;
 }
