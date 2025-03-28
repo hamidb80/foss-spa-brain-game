@@ -1,5 +1,6 @@
 type Games.LikePreviousShape.Phases {
   Before
+  GameOver
   Ready
   Hide
   Decide
@@ -15,6 +16,8 @@ locale en {
   isTheSame: "is the same?",
   start: "start",
   ready: "ready?",
+  gameover: "game over",
+  restart: "re-start",
 }
 
 component Games.LikePreviousShape {
@@ -24,12 +27,14 @@ component Games.LikePreviousShape {
   property shapes: Array(Function(Number, String)) = ShapeGenerator.ALL
   
   property scale : Number = 200
-  property changeProb = 0.5
-  property delay = 600
+  property changeProb: Number = 0.5
+  property delay: Number = 1200
+  property initialLives: Number = 3
 
   // ------------------------------------------------------------
 
   state score: Number = 0
+  state lives: Number = 0
   state phase = Games.LikePreviousShape.Phases.Before
   state history : Array(Games.LikePreviousShape.State) = []
 
@@ -68,7 +73,16 @@ component Games.LikePreviousShape {
 
   // ------------------------------------------------------------
 
-  fun startGame (delayed: Bool): Promise(Void) {
+  fun startGame {
+    next { score: 0, lives: initialLives }
+  }
+
+  fun initGame {
+    next { phase: Games.LikePreviousShape.Phases.Before,
+           history: [], }
+  }
+
+  fun nextStep (delayed: Bool): Promise(Void) {
     await if delayed {
       next { phase: Games.LikePreviousShape.Phases.Hide }
       Timer.timeout(delay)
@@ -99,8 +113,16 @@ component Games.LikePreviousShape {
 
   fun pass (isCorrect: Bool) {
     if phase == Games.LikePreviousShape.Phases.Decide {
-      next {score: score + Bool.toSign(isCorrect == won())}
-      startGame(true)
+      let result = Bool.toNumber(isCorrect == won())
+      next {score: score + result, 
+            lives: lives -1 + result}
+
+      if lives == 0 {
+        next {phase: Games.LikePreviousShape.Phases.GameOver}
+      }
+      else {
+        nextStep(true)
+      }
     }
   }
 
@@ -109,7 +131,8 @@ component Games.LikePreviousShape {
   fun render {
     case history |> Array.last(){
       Maybe.Nothing => {
-        startGame(false)
+        nextStep(false)
+        startGame()
         <span> "wait" </span>
       }
       Maybe.Just(cur) => <>
@@ -117,55 +140,75 @@ component Games.LikePreviousShape {
             <h2 class="text-center">
               :score  ": " score
             </h2>
+            <h3 class="text-center">
+              for i of Array.range(1, lives) {
+                <i class="bi bi-heart text-danger mx-1"></i>
+              }
+            </h3>
           </div>
 
           <div class="d-flex justify-content-center">
-            <div::cc class="card shadow-sm overflow-hidden opacity-#{Bool.toNumber(phase !=  Games.LikePreviousShape.Phases.Hide) * 100}">
 
-              <div class="card-body">
-                <h3 class="card-title text-center">
-                if phase == Games.LikePreviousShape.Phases.Ready {
-                  :ready
-                }
-                else {
-                  :isTheSame
-                }
-                </h3>
+            if phase == Games.LikePreviousShape.Phases.GameOver {
+              <div>
+                <h1>
+                  :gameover
+                </h1>
+                <div class="d-grid gap-2 w-100 mt-4">
+                  <button class="btn btn-outline-info" onClick={() {initGame()}}>
+                    :restart
+                  </button>
+                </div>
               </div>
+            }
+            else {
+              <div::cc class="card shadow-sm overflow-hidden opacity-#{Bool.toNumber(phase !=  Games.LikePreviousShape.Phases.Hide) * 100}">
 
-              <div class="card-img-top text-center px-5 py-4">
-                <svg
-                  width="#{scale}"
-                  height="#{scale}"
-                  >
-                  <path 
-                    d={cur.dpath} 
-                    fill={cur.color.code} 
-                    />
-                </svg>
-              </div>
+                <div class="card-body">
+                  <h3 class="card-title text-center">
+                  if phase == Games.LikePreviousShape.Phases.Ready {
+                    :ready
+                  }
+                  else {
+                    :isTheSame
+                  }
+                  </h3>
+                </div>
 
-              <div class="card-body d-flex justify-content-between bg-light"> 
-                if phase == Games.LikePreviousShape.Phases.Ready {
-                  <div class="d-grid gap-2 w-100">
-                    <button class="btn btn-outline-primary" onClick={() {startGame(true)}}>
-                      :start
-                    </button>
-                  </div>
-                }
-                else {
-                  <>
-                    <button class="btn btn-outline-danger" onClick={() {pass(false)}}>
-                      <i class="bi bi-x-lg"></i>
-                    </button>
-            
-                    <button class="btn btn-outline-success" onClick={() {pass(true)}}>
-                      <i class="bi bi-check-lg"></i>
-                    </button>
-                  </>
-                }
+                <div class="card-img-top text-center px-5 py-4">
+                  <svg
+                    width="#{scale}"
+                    height="#{scale}"
+                    >
+                    <path 
+                      d={cur.dpath} 
+                      fill={cur.color.code} 
+                      />
+                  </svg>
+                </div>
+
+                <div class="card-body d-flex justify-content-between bg-light"> 
+                  if phase == Games.LikePreviousShape.Phases.Ready {
+                    <div class="d-grid gap-2 w-100">
+                      <button class="btn btn-outline-primary" onClick={() {nextStep(true)}}>
+                        :start
+                      </button>
+                    </div>
+                  }
+                  else {
+                    <>
+                      <button class="btn btn-outline-danger" onClick={() {pass(false)}}>
+                        <i class="bi bi-x-lg"></i>
+                      </button>
+              
+                      <button class="btn btn-outline-success" onClick={() {pass(true)}}>
+                        <i class="bi bi-check-lg"></i>
+                      </button>
+                    </>
+                  }
+                </div>
               </div>
-            </div>
+            }
           </div>
 
         </>
