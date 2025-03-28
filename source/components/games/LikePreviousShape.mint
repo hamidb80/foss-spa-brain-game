@@ -157,6 +157,7 @@ component Games.LikePreviousShape {
                 <div class="d-grid gap-2 w-100 mt-4">
                   <button class="btn btn-outline-info" onClick={() {initGame()}}>
                     :restart
+                    <i class="bi bi-play mx-1"></i>
                   </button>
                 </div>
               </div>
